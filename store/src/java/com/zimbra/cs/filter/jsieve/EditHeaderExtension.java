@@ -299,11 +299,17 @@ public class EditHeaderExtension {
                         arg = itr.next();
                         if (arg instanceof StringListArgument) {
                             StringListArgument sla = (StringListArgument) arg;
-                            String newName = sla.getList().get(0);
-                            if (StringUtil.isNullOrEmpty(newName)) {
+                            String origNewName = sla.getList().get(0);
+                            if (StringUtil.isNullOrEmpty(origNewName)) {
                                 throw new SyntaxException("New name must be present with :newname in replaceheader : " + arg);
                             }
-                            this.newName = newName;
+                            String newName2 = origNewName;
+                            Pattern pattern = Pattern.compile("^\\s+");
+                            newName2 = pattern.matcher(newName2).replaceAll("");
+                            if (!newName2.equals(origNewName)) {
+                                throw new SyntaxException("New name must not start with spaces in :newname in replaceheader : " + arg);
+                            }
+                            this.newName = origNewName;
                         } else {
                             throw new SyntaxException("New name not provided with :newname in replaceheader : " + arg);
                         }
@@ -485,10 +491,18 @@ public class EditHeaderExtension {
      * @throws SyntaxException
      */
     public void commonValidation() throws SyntaxException {
-        if (this.key != null) {
+        if (!StringUtil.isNullOrEmpty(this.key)) {
+            String tempKey = this.key;
+            Pattern pattern = Pattern.compile("^\\s+");
+            tempKey = pattern.matcher(tempKey).replaceAll("");
+            if (!tempKey.equals(this.key)) {
+                throw new SyntaxException("Header name must not start with spaces : \"" + this.key + "\"");
+            }
             if (!CharsetUtil.US_ASCII.equals(CharsetUtil.checkCharset(this.key, CharsetUtil.US_ASCII))) {
                 throw new SyntaxException("key must be printable ASCII only.");
             }
+        } else {
+            throw new SyntaxException("EditHeaderExtension:Header name must be present.");
         }
         // relation comparator must be valid
         if (this.relationalComparator != null) {

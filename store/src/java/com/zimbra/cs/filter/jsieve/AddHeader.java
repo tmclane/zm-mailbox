@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.mail.Header;
 import javax.mail.MessagingException;
@@ -154,6 +155,12 @@ public class AddHeader extends AbstractCommand {
         }
 
         if (!StringUtil.isNullOrEmpty(headerName)) {
+            String tempHeaderName = headerName;
+            Pattern pattern = Pattern.compile("^\\s+");
+            tempHeaderName = pattern.matcher(tempHeaderName).replaceAll("");
+            if (!tempHeaderName.equals(headerName)) {
+                throw new SyntaxException("Header name must not start with spaces : \"" + headerName + "\"");
+            }
             if (!CharsetUtil.US_ASCII.equals(CharsetUtil.checkCharset(headerName, CharsetUtil.US_ASCII))) {
                 throw new SyntaxException("AddHeader:Header name must be printable ASCII only.");
             }
