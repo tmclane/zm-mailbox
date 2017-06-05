@@ -53,6 +53,9 @@ final class NioImapRequest extends ImapRequest {
 
     private void parseCommand(String line) throws IOException, ProtocolDecoderException {
         addPart(line);
+        if (line.endsWith("\r\n")) {
+            line = line.substring(0, line.lastIndexOf('\r'));
+        }
         LiteralInfo li = LiteralInfo.parse(line); // literal format is already validated in decoder
         if (li != null) {
             literalCount = li.getCount();
