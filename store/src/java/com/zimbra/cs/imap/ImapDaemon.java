@@ -26,6 +26,7 @@ import org.apache.log4j.PropertyConfigurator;
 import com.zimbra.common.localconfig.LC;
 import com.zimbra.common.service.ServiceException;
 import com.zimbra.cs.account.Provisioning;
+import com.zimbra.cs.db.DbPool;
 import com.zimbra.cs.extension.ExtensionUtil;
 import com.zimbra.cs.store.StoreManager;
 import com.zimbra.common.util.ZimbraLog;
@@ -94,6 +95,8 @@ public class ImapDaemon {
             props.load(new FileInputStream(IMAPD_LOG4J_CONFIG));
             PropertyConfigurator.configure(props);
             maybeInitEphemeralBackendExtension();
+
+            DbPool.startup();
 
             try {
                 StoreManager.getInstance().startup();
