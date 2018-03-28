@@ -1,0 +1,11 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: zcs-dev:latest
+
+    steps:
+      - checkout
+      - run: echo "Hello from CircleCI"
+
