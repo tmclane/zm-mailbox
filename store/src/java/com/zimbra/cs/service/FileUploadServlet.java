@@ -640,9 +640,12 @@ public class FileUploadServlet extends ZimbraServlet {
                 mPending.put(up.uuid, up);
             }
             uploads.add(up);
-            FileOutputStream attachment = new FileOutputStream(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
+
+            /*FileOutputStream attachment = new FileOutputStream(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
             attachment.write("".getBytes());
             attachment.close();
+            */
+            fi.write(new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid)));
         }
 
         sendResponse(resp, HttpServletResponse.SC_OK, fmt, reqId, uploads, items);
