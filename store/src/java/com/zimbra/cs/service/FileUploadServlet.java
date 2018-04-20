@@ -640,7 +640,7 @@ public class FileUploadServlet extends ZimbraServlet {
             }
             uploads.add(up);
             FileOutputStream attachment = new FileOutputStream(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
-            attachment.write(fi.getOutputStream().getBytes());
+            attachment.write(fi.getInputStream().getBytes());
             attachment.close();
         }
 
