@@ -185,7 +185,7 @@ public class FileUploadServlet extends ZimbraServlet {
             if (!file.isInMemory() && file instanceof DiskFileItem) {
                 // If it's backed by a File, return a BlobInputStream so that any use by JavaMail
                 // will avoid loading the whole thing in memory.
-                File f = ((DiskFileItem) file).getStoreLocation();
+                File f = new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid);
                 blobInputStream = new BlobInputStream(f, f.length());
                 return blobInputStream;
             } else {
@@ -640,11 +640,6 @@ public class FileUploadServlet extends ZimbraServlet {
                 mPending.put(up.uuid, up);
             }
             uploads.add(up);
-
-            /*FileOutputStream attachment = new FileOutputStream(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
-            attachment.write("".getBytes());
-            attachment.close();
-            */
             try {
                 fi.write(new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid)));
             }
