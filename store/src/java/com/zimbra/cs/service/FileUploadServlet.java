@@ -16,11 +16,7 @@
  */
 package com.zimbra.cs.service;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -127,11 +123,9 @@ public class FileUploadServlet extends ZimbraServlet {
         Upload(String acctId, FileItem attachment, String filename) throws ServiceException {
             assert(attachment != null); // TODO: Remove null checks in mainline.
 
-
-            String localServer = Provisioning.getInstance().getLocalServer().getId();
             accountId = acctId;
             time      = System.currentTimeMillis();
-            uuid      = localServer + UPLOAD_PART_DELIMITER + LdapUtil.generateUUID();
+            uuid      = LdapUtil.generateUUID();
             name      = FileUtil.trimFilename(filename);
             file      = attachment;
             if (file == null) {
@@ -266,6 +260,9 @@ public class FileUploadServlet extends ZimbraServlet {
         synchronized (mPending) {
             Upload up = mPending.get(uploadId);
             if (up == null) {
+                // FIXME: Check filesystem for Upload regardless since it may be shared.
+
+
                 mLog.warn("upload not found: " + context);
                 throw MailServiceException.NO_SUCH_UPLOAD(uploadId);
             }
@@ -356,6 +353,7 @@ public class FileUploadServlet extends ZimbraServlet {
             mLog.info("saveUpload(): received %s", up);
             synchronized (mPending) {
                 mPending.put(up.uuid, up);
+
             }
             success = true;
             return up;
@@ -641,6 +639,9 @@ public class FileUploadServlet extends ZimbraServlet {
                 mPending.put(up.uuid, up);
             }
             uploads.add(up);
+            FileOutputStream attachment = new FileOutputStream(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
+            attachment.write(fi.getOutputStream().getBytes());
+            attachment.close();
         }
 
         sendResponse(resp, HttpServletResponse.SC_OK, fmt, reqId, uploads, items);
