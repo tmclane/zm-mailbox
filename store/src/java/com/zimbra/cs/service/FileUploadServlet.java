@@ -645,7 +645,12 @@ public class FileUploadServlet extends ZimbraServlet {
             attachment.write("".getBytes());
             attachment.close();
             */
-            fi.write(new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid)));
+            try {
+                fi.write(new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid)));
+            }
+            catch (Exception e) {
+
+            }
         }
 
         sendResponse(resp, HttpServletResponse.SC_OK, fmt, reqId, uploads, items);
