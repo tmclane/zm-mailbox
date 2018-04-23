@@ -262,10 +262,14 @@ public class FileUploadServlet extends ZimbraServlet {
             Upload up = mPending.get(uploadId);
             if (up == null) {
                 // FIXME: Check filesystem for Upload regardless since it may be shared.
+                File upload = new File(String.format("%s/upload_%s.tmp", getUploadDir(), up.uuid));
+                if (!upload.exists()) {
+                    mLog.warn("upload not found: " + context);
+                    throw MailServiceException.NO_SUCH_UPLOAD(uploadId);
+                } else {
+//                    up = new Upload();
 
-
-                mLog.warn("upload not found: " + context);
-                throw MailServiceException.NO_SUCH_UPLOAD(uploadId);
+                }
             }
             if (!accountId.equals(up.accountId)) {
                 mLog.warn("mismatched accountId for upload: " + up + "; expected: " + context);
